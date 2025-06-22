@@ -47,36 +47,6 @@ const _layout = () => {
           borderColor: "0f0d23",
         },
       }}>
-      {/* <Tabs.Screen
-        name="Login"
-        options={{
-          title: "Login",
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <TabeIcon focused={focused} icon={icons.login} title="Login" />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="Register"
-        options={{
-          title: "Register",
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <TabeIcon focused={focused} icon={icons.login} title="Register" />
-          ),
-        }}
-      /> */}
-      <Tabs.Screen
-        name="saved"
-        options={{
-          title: "Saved",
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <TabeIcon focused={focused} icon={icons.save} title="Saved" />
-          ),
-        }}
-      />
       <Tabs.Screen
         name="index"
         options={{
@@ -87,7 +57,6 @@ const _layout = () => {
           ),
         }}
       />
-
       <Tabs.Screen
         name="search"
         options={{
@@ -98,9 +67,19 @@ const _layout = () => {
           ),
         }}
       />
+      <Tabs.Screen
+        name="saved"
+        options={{
+          title: "Saved",
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <TabeIcon focused={focused} icon={icons.save} title="Saved" />
+          ),
+        }}
+      />
 
       <Tabs.Screen
-        name="profile"
+        name="(protected)"
         options={{
           title: "Profile",
           headerShown: false,

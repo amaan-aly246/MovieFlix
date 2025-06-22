@@ -1,7 +1,6 @@
 import { icons } from "@/constants/icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import "../globals.css";
 import {
   Image,
   Pressable,
@@ -12,6 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants/images";
+import "../globals.css";
 interface AuthScreenProps {
   mode: "login" | "register";
   onSubmit: () => void;
@@ -89,9 +89,9 @@ const AuthScreen = ({ mode, onSubmit }: AuthScreenProps) => {
               className="text-white text-[16px] mt-5"
               onPress={() => {
                 if (isLogin) {
-                  return router.replace("/auth/Login");
+                  return router.replace("/(auth)/Register");
                 }
-                return router.replace("/auth/Login");
+                return router.replace("/(auth)/Login");
               }}>
               {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
               <Text className="text-purple-600 font-bold ">
@@ -100,6 +100,16 @@ const AuthScreen = ({ mode, onSubmit }: AuthScreenProps) => {
             </Text>
           </View>
         </View>
+        <TouchableOpacity
+          className="absolute bottom-24 left-0 right-0 mx-5 bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center z-50"
+          onPress={() => router.push("/")}>
+          <Image
+            source={icons.arrow}
+            className="size-5 mr-1 mt-0.5 rotate-180"
+            tintColor="#fff"
+          />
+          <Text className="text-white font-semibold text-base">Home</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     </View>
   );
