@@ -14,7 +14,12 @@ interface Movie {
   vote_average: number;
   vote_count: number;
 }
-
+interface CustomInputProps {
+  name: string;
+  placeholder: string;
+  control: any;
+  secureTextEntry?: Boolean;
+}
 interface TrendingMovie {
   searchTerm: string;
   movie_id: number;
