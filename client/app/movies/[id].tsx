@@ -1,9 +1,11 @@
+import { useAuth } from "@/hooks/useAuth";
+import { useUserContext } from "@/hooks/useUserContext";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { icons } from "../../constants/icons";
-import { fetchMovieDetails } from "../../services/api";
-import useFetch from "../../services/useFetch";
+import useFetch from "../../hooks/useFetch";
+import { addMovie, fetchMovieDetails } from "../../services/api";
 interface MovieInfoProps {
   label: string;
   value?: string | number | null;
@@ -19,10 +21,13 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => (
 
 const MovieDetails = () => {
   const { id } = useLocalSearchParams();
-  const [fav, setFav] = useState(true);
+  const [fav, setFav] = useState(false);
+  const { watchList } = useUserContext();
   const { data: movie, loading } = useFetch(() =>
     fetchMovieDetails(id as string)
   );
+  const { userId } = useAuth();
+
   return (
     <View className=" flex-1 bg-primary">
       <ScrollView
@@ -56,13 +61,16 @@ const MovieDetails = () => {
                 ({movie?.vote_count} votes)
               </Text>
             </View>
-            <View className="">
-              {fav ? (
+            <TouchableOpacity
+              onPress={() => {
+                addMovie(id as string, userId, setFav);
+              }}>
+              {fav || watchList.includes(id as string) ? (
                 <Image source={icons.heartFill} className="size-6" />
               ) : (
                 <Image source={icons.heart} className="size-5" />
               )}
-            </View>
+            </TouchableOpacity>
           </View>
           <MovieInfo label="Overview" value={movie?.overview} />
           <MovieInfo

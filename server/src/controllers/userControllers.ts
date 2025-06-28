@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, response } from "express";
 import { db } from "../database/drizzle";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, and, not, inArray } from "drizzle-orm";
 import { IResponse } from "../interfaces/interfaces";
 import { userTable } from "../database/schema";
 const getUsers = async (
@@ -29,24 +29,47 @@ const addMovie = async (
   try {
     const { userId, movieId } = req.body;
 
-    await db.execute(sql`
-  UPDATE user_table
-  SET saved_movies_ids = 
-    CASE 
-      WHEN NOT ${movieId} = ANY(saved_movies_ids) THEN 
-        array_append(saved_movies_ids, ${movieId})
-      ELSE saved_movies_ids
-    END
-  WHERE userId = ${userId}
-`);
+    // First check if user exists
+    const existingUser = (
+      await db
+        .select({
+          savedMoviesIds: userTable.savedMoviesIds,
+        })
+        .from(userTable)
+        .where(eq(userTable.userId, userId))
+    )[0];
+
+    if (!existingUser) {
+      const response: IResponse = {
+        success: false,
+        message: "User not found",
+      };
+
+      res.status(404).json(response);
+      return;
+    }
+
+    // Check if movie already exists in array
+    if (existingUser.savedMoviesIds.includes(movieId)) {
+      res.status(200);
+      return;
+    }
+
+    // Perform the update
+    await db
+      .update(userTable)
+      .set({
+        savedMoviesIds: [...existingUser.savedMoviesIds, movieId],
+      })
+      .where(eq(userTable.userId, userId));
 
     const response: IResponse = {
       success: true,
-      message: `Movie of userId ${movieId} is added to the watchlist.`,
+      message: `Movie ${movieId} added to the watchlist.`,
     };
     res.status(201).json(response);
   } catch (error) {
-    console.log(error);
+    console.error("Error in addMovie:", error);
     next(error);
   }
 };
@@ -59,33 +82,46 @@ const removeMovie = async (
   try {
     const { userId, movieId } = req.body;
 
-    const result = await db
+    const [user] = await db
       .select({
         savedMoviesIds: userTable.savedMoviesIds,
       })
       .from(userTable)
       .where(eq(userTable.userId, userId));
 
-    const MoviesIds = result[0].savedMoviesIds;
-    if (!MoviesIds?.includes(movieId)) {
+    if (!user) {
       const response: IResponse = {
         success: false,
-        message: `Movie of Id ${movieId} does not exist in the db.`,
+        message: "User not found",
       };
       res.status(404).json(response);
       return;
     }
-    await db.execute(sql`
-  UPDATE user_table 
-  SET saved_movies_ids = array_remove(saved_movies_ids, ${movieId})
-  WHERE userId = ${userId}
-`);
+
+    // Check if movie exists in the array
+    if (!user.savedMoviesIds.includes(movieId)) {
+      const response: IResponse = {
+        success: false,
+        message: `Movie ID ${movieId} not found in user's watchlist`,
+      };
+      res.status(404).json(response);
+      return;
+    }
+
+    await db
+      .update(userTable)
+      .set({
+        savedMoviesIds: user.savedMoviesIds.filter((id) => id !== movieId),
+      })
+      .where(eq(userTable.userId, userId));
+
     const response: IResponse = {
       success: true,
-      message: "Movie removed from wishlist successfully",
+      message: "Movie removed from watchlist successfully",
     };
-    res.json(response);
+    res.status(200).json(response);
   } catch (error) {
+    console.error("Error in removeMovie:", error);
     next(error);
   }
 };
@@ -96,15 +132,30 @@ const getAllSavedMovies = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { userId } = req.body;
+    const userId = req.query.userId as string;
+
+    if (!userId) {
+      res.status(400).json({
+        success: false,
+        message: "Missing userId in query parameters.",
+      });
+      return;
+    }
 
     const result = await db
       .select({
-        userId: userTable.userId,
         savedMoviesIds: userTable.savedMoviesIds,
       })
       .from(userTable)
       .where(eq(userTable.userId, userId));
+
+    if (!result[0]) {
+      res.status(404).json({
+        success: false,
+        message: `User with ID ${userId} not found.`,
+      });
+      return;
+    }
 
     const response: IResponse = {
       success: true,
@@ -117,4 +168,5 @@ const getAllSavedMovies = async (
     next(error);
   }
 };
+
 export { getUsers, addMovie, removeMovie, getAllSavedMovies };

@@ -86,7 +86,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       const accessToken = jwt.sign(
         { userId: userId, userName: userName },
         config.env.access_token_secret!,
-        { expiresIn: "30s" }
+        { expiresIn: "1d" }
       );
 
       const refreshToken = jwt.sign(
@@ -162,7 +162,30 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 };
+const authenticateToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  console.log("authHeader is", authHeader);
+  if (!token) {
+    res.sendStatus(401);
+    return;
+  }
 
+  jwt.verify(token, config.env.access_token_secret!, (err, user) => {
+    if (err) {
+      res.sendStatus(403);
+      return;
+    }
+    console.log("user is", user);
+    // @ts-ignore
+    res.status(200).json({ valid: true, userId: user.userId });
+    next();
+  });
+};
 const reGenerateToken = async (req: Request, res: Response): Promise<void> => {
   const { refreshToken } = req.cookies;
   if (!refreshToken) {
@@ -209,4 +232,4 @@ const reGenerateToken = async (req: Request, res: Response): Promise<void> => {
     }
   );
 };
-export { logout, login, register, reGenerateToken };
+export { logout, login, register, reGenerateToken, authenticateToken };

@@ -1,8 +1,8 @@
 import { LoginFormInput } from "@/app/(auth)/Login";
 import { axiosPrivate } from "@/config/axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AxiosError } from "axios";
 import { UseFormSetError } from "react-hook-form";
-
 interface LoginProps {
   userDetails: {
     email: string;
@@ -18,6 +18,7 @@ export const login = async ({
 }: LoginProps): Promise<Object | null> => {
   try {
     const response = (await axiosPrivate.post("/auth/login", userDetails)).data;
+    await AsyncStorage.setItem("accessToken", response.data.accessToken);
     setToken(response.data.accessToken);
     return response.data.userId;
   } catch (error) {

@@ -1,8 +1,13 @@
 import axios from "axios";
-const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL_DEV;
+const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL_DEV!;
 
 export const axiosPrivate = axios.create({
   baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
+  withCredentials: true,
+});
+
+export default axios.create({
+  baseURL: BASE_URL,
   withCredentials: true,
 });

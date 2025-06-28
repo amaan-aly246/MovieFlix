@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import { icons } from "../../constants/icons";
 import { images } from "../../constants/images";
+import useFetch from "../../hooks/useFetch";
 import { fetchMovies } from "../../services/api";
-import useFetch from "../../services/useFetch";
 import MovieCard from "../components/MovieCard";
 import SearchBar from "../components/SearchBar";
 export default function Index() {

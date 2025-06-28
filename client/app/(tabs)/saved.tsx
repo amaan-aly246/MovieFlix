@@ -1,25 +1,22 @@
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
+import { useAuth } from "@/hooks/useAuth";
+import { useUserContext } from "@/hooks/useUserContext";
 import React from "react";
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
+import useFetch from "../../hooks/useFetch";
+import { getFavMovies } from "../../services/api";
 import MovieCard from "../components/MovieCard";
-import { fetchMovies } from "../../services/api";
-import useFetch from "../../services/useFetch";
 const saved = () => {
+  const { userId } = useAuth();
+  const { setWatchList } = useUserContext();
+
   const {
     data: movies,
     loading,
     error,
-  } = useFetch(() =>
-    fetchMovies({
-      query: "",
-    })
-  );
-  // useEffect(() => {
-  //   if (movies) {
-  //     console.log("movies  ", movies[0].id);
-  //   }
-  // }, [movies]);
+    refetch,
+  } = useFetch(() => getFavMovies(userId, setWatchList));
   return (
     <View className="flex-1 bg-primary">
       <Image
@@ -32,7 +29,9 @@ const saved = () => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <MovieCard {...item} />}
         numColumns={3}
-        className="px-5"
+        className="px-0"
+        refreshing={loading}
+        onRefresh={refetch}
         columnWrapperStyle={{
           justifyContent: "center",
           gap: 16,
@@ -67,9 +66,8 @@ const saved = () => {
         ListEmptyComponent={
           !loading && !error ? (
             <View>
-              <Text>
-                No movies in the wishlist. Go to home to add movies to the
-                wishlist
+              <Text className=" text-xl font-bold mx-5 text-white ">
+                No movies in the wishlist.
               </Text>
             </View>
           ) : null

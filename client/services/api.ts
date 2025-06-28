@@ -1,3 +1,4 @@
+import axios, { axiosPrivate } from "@/config/axios";
 export const TMDB_CONFIG = {
   BASE_URL: "https://api.themoviedb.org/3",
   API_KEY: process.env.EXPO_PUBLIC_MOVIE_API_KEY,
@@ -43,6 +44,59 @@ export const fetchMovieDetails = async (
     return data;
   } catch (error) {
     console.log(error);
+    throw error;
+  }
+};
+
+// add movie to watch list
+
+export const addMovie = async (
+  movieId: string | null,
+  userId: string | null,
+  setFav: (value: boolean) => void
+): Promise<void> => {
+  try {
+    if (!movieId || !userId) {
+      throw new Error("MovieId or userId is null");
+    }
+    const response = await axios.patch("/addmovie", {
+      userId,
+      movieId,
+    });
+    if (!response.data.success) throw new Error("Failed to add movie");
+    setFav(true);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+export const getFavMovies = async (
+  userId: string | null,
+  setWatchList: React.Dispatch<React.SetStateAction<string[]>>
+) => {
+  try {
+    if (!userId) {
+      throw new Error("userId is null");
+    }
+
+    const response = (
+      await axiosPrivate.get("/getallsavedmovies", {
+        params: {
+          userId,
+        },
+      })
+    ).data;
+
+    const savedMoviesIds = response.data.savedMoviesIds;
+    setWatchList(savedMoviesIds);
+    // Wait for all movie details to fetch
+    const data = await Promise.all(
+      savedMoviesIds.map((id: string) => fetchMovieDetails(id))
+    );
+
+    return data;
+  } catch (error) {
+    console.error("Error in getFavMovies:", error);
     throw error;
   }
 };
