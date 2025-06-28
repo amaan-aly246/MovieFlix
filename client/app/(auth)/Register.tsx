@@ -1,4 +1,5 @@
 import { icons } from "@/constants/icons";
+import { register } from "@/functions/register";
 import { registerSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
@@ -10,7 +11,7 @@ import { z } from "zod";
 import { images } from "../../constants/images";
 import CustomInput from "../components/CustomInput";
 
-type RegisterFormInput = z.infer<typeof registerSchema>;
+export type RegisterFormInput = z.infer<typeof registerSchema>;
 export default function Register() {
   const {
     control,
@@ -21,17 +22,15 @@ export default function Register() {
   } = useForm<RegisterFormInput>({
     resolver: zodResolver(registerSchema),
   });
+
   const [showPassword, setShowPassword] = useState(true);
-  const onSubmit = async (data: RegisterFormInput) => {
-    console.log("data is", data);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      throw new Error();
-    } catch (error) {
-      setError("root", {
-        message: "Email already taken",
-      });
-    }
+  const onSubmit = async ({ password, email }: RegisterFormInput) => {
+    const userDetails = {
+      email,
+      password,
+    };
+    const userID = await register({ userDetails, setError });
+    console.log(userID);
   };
   return (
     <View className="flex-1 bg-primary">

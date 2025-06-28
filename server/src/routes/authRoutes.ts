@@ -10,6 +10,6 @@ import {
 } from "../controllers/authControllers";
 router.route("/register").post(register);
 router.route("/login").post(login);
-router.route("/logout").post(logout);
 router.route("/refresh").get(reGenerateToken);
+router.route("/logout").post(logout);
 export default router;

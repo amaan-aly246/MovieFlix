@@ -1,9 +1,9 @@
+import { useAuth } from "@/hooks/useAuth";
 import { Redirect, Slot } from "expo-router";
-
 export default function ProtectedLayout() {
-  const isAuthenticated = false;
+  const { token } = useAuth();
 
-  if (!isAuthenticated) return <Redirect href="/(auth)/Login" />;
+  if (!token) return <Redirect href="/(auth)/Login" />;
 
   return <Slot />;
 }

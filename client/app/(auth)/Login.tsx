@@ -1,4 +1,6 @@
 import { icons } from "@/constants/icons";
+import { login } from "@/functions/login";
+import { useAuth } from "@/hooks/useAuth";
 import { loginSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
@@ -9,9 +11,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 import { images } from "../../constants/images";
 import CustomInput from "../components/CustomInput";
-
+export type LoginFormInput = z.infer<typeof loginSchema>;
 export default function Login() {
-  type LoginFormInput = z.infer<typeof loginSchema>;
   const {
     control,
     handleSubmit,
@@ -22,16 +23,14 @@ export default function Login() {
     resolver: zodResolver(loginSchema),
   });
   const [showPassword, setShowPassword] = useState(true);
-
-  const onSubmit = async (data: LoginFormInput) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      throw new Error();
-    } catch (error) {
-      setError("root", {
-        message: "Email already taken",
-      });
-    }
+  const { setToken } = useAuth();
+  const onSubmit = async ({ email, password }: LoginFormInput) => {
+    const userDetails = {
+      email,
+      password,
+    };
+    const id = await login({ userDetails, setError, setToken });
+    console.log("id is", id);
   };
   return (
     <View className="flex-1 bg-primary">

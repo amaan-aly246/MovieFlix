@@ -10,8 +10,8 @@ import config from "../config";
 const saltRound = 10;
 const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, email, password } = req.body;
-
+    const { email, password } = req.body;
+    console.log("bodyy from backend is ", req.body);
     // check if user already exits
     let existingUser = await db
       .select({
@@ -32,8 +32,7 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
     // create a new user
     const salt = await bcrypt.genSaltSync(saltRound);
     const hashedPassword = await bcrypt.hashSync(password, salt);
-    const user: Omit<User, "userId"> = {
-      name: name,
+    const user: Omit<User, "userId" | "name"> = {
       email: email,
       password: hashedPassword,
     };
@@ -105,7 +104,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: true, // set only over HTTPS
+        secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       });
@@ -114,6 +113,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
         message: `Login successful!`,
         data: {
           accessToken,
+          userId,
         },
       });
     } else {
@@ -131,7 +131,10 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 const logout = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { refreshToken } = req.cookies;
-    if (!refreshToken) res.sendStatus(204);
+    if (!refreshToken) {
+      res.sendStatus(204);
+      return;
+    }
 
     // remove from db
     const user = (

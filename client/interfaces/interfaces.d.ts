@@ -14,6 +14,15 @@ interface Movie {
   vote_average: number;
   vote_count: number;
 }
+type ErrorResponse = {
+  success: boolean;
+  message?: string;
+};
+
+interface AuthContextType {
+  token: string | null;
+  setToken: (valude: string | null) => void;
+}
 interface CustomInputProps {
   name: string;
   placeholder: string;

@@ -16,8 +16,10 @@
   "license": "ISC",
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
+    "@types/cors": "^2.8.19",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "drizzle-orm": "^0.44.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",

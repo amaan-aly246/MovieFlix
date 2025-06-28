@@ -1,0 +1,32 @@
+import { LoginFormInput } from "@/app/(auth)/Login";
+import { axiosPrivate } from "@/config/axios";
+import { AxiosError } from "axios";
+import { UseFormSetError } from "react-hook-form";
+
+interface LoginProps {
+  userDetails: {
+    email: string;
+    password: string;
+  };
+  setError: UseFormSetError<LoginFormInput>;
+  setToken: (value: string | null) => void;
+}
+export const login = async ({
+  userDetails,
+  setError,
+  setToken,
+}: LoginProps): Promise<Object | null> => {
+  try {
+    const response = (await axiosPrivate.post("/auth/login", userDetails)).data;
+    setToken(response.data.accessToken);
+    return response.data.userId;
+  } catch (error) {
+    const err = error as AxiosError<ErrorResponse>;
+
+    setError("root", {
+      message:
+        err.response?.data?.message || err.message || "An error occurred",
+    });
+    return null;
+  }
+};
