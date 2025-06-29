@@ -80,15 +80,15 @@ const removeMovie = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { userId, movieId } = req.body;
-
+    const userId = req.query.userId as string;
+    const movieId = req.query.movieId as string;
     const [user] = await db
       .select({
         savedMoviesIds: userTable.savedMoviesIds,
       })
       .from(userTable)
       .where(eq(userTable.userId, userId));
-
+    console.log("user is ", user);
     if (!user) {
       const response: IResponse = {
         success: false,

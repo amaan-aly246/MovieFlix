@@ -70,6 +70,30 @@ export const addMovie = async (
     throw error;
   }
 };
+
+// remove movie from watch list
+export const removMovie = async (
+  movieId: null | string,
+  userId: null | string,
+  setWatchList: React.Dispatch<React.SetStateAction<string[]>>,
+  watchList: string[]
+) => {
+  if (!movieId || !userId) {
+    throw new Error("MovieId or userId is null");
+  }
+
+  const res = await axios.delete("/removemovie", {
+    params: {
+      userId,
+      movieId,
+    },
+  });
+
+  if (res.data.success) {
+    const updatedWatchList = watchList.filter((item) => item != movieId);
+    setWatchList(updatedWatchList);
+  }
+};
 export const getFavMovies = async (
   userId: string | null,
   setWatchList: React.Dispatch<React.SetStateAction<string[]>>

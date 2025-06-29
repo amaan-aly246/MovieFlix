@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { icons } from "../../constants/icons";
 import useFetch from "../../hooks/useFetch";
-import { addMovie, fetchMovieDetails } from "../../services/api";
+import { addMovie, fetchMovieDetails, removMovie } from "../../services/api";
 interface MovieInfoProps {
   label: string;
   value?: string | number | null;
@@ -22,7 +22,7 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => (
 const MovieDetails = () => {
   const { id } = useLocalSearchParams();
   const [fav, setFav] = useState(false);
-  const { watchList } = useUserContext();
+  const { watchList, setWatchList } = useUserContext();
   const { data: movie, loading } = useFetch(() =>
     fetchMovieDetails(id as string)
   );
@@ -61,16 +61,22 @@ const MovieDetails = () => {
                 ({movie?.vote_count} votes)
               </Text>
             </View>
-            <TouchableOpacity
-              onPress={() => {
-                addMovie(id as string, userId, setFav);
-              }}>
-              {fav || watchList.includes(id as string) ? (
+
+            {fav || watchList.includes(id as string) ? (
+              <TouchableOpacity
+                onPress={() =>
+                  removMovie(id as string, userId, setWatchList, watchList)
+                }>
                 <Image source={icons.heartFill} className="size-6" />
-              ) : (
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={() => {
+                  addMovie(id as string, userId, setFav);
+                }}>
                 <Image source={icons.heart} className="size-5" />
-              )}
-            </TouchableOpacity>
+              </TouchableOpacity>
+            )}
           </View>
           <MovieInfo label="Overview" value={movie?.overview} />
           <MovieInfo
