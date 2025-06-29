@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import {
   ActivityIndicator,
   FlatList,
@@ -12,10 +11,7 @@ import { images } from "../../constants/images";
 import useFetch from "../../hooks/useFetch";
 import { fetchMovies } from "../../services/api";
 import MovieCard from "../components/MovieCard";
-import SearchBar from "../components/SearchBar";
 export default function Index() {
-  const router = useRouter();
-
   const {
     data: movies,
     loading,
@@ -43,10 +39,6 @@ export default function Index() {
           <Text>Error : {error?.message}</Text>
         ) : (
           <View className="flex-1 mt-5">
-            <SearchBar
-              onPress={() => router.push("/search")}
-              placeholder="Search for movies"
-            />
             <>
               <Text className="text-lg text-white font-bold mt-5 mb-3">
                 Latest Movies
