@@ -1,4 +1,5 @@
-import axios, { axiosPrivate } from "@/config/axios";
+import axios, { axiosRecommender } from "@/config/axios";
+import { axiosPrivate } from "@/config/axios";
 export const TMDB_CONFIG = {
   BASE_URL: "https://api.themoviedb.org/3",
   API_KEY: process.env.EXPO_PUBLIC_MOVIE_API_KEY,
@@ -102,7 +103,6 @@ export const getFavMovies = async (
     if (!userId) {
       throw new Error("userId is null");
     }
-
     const response = (
       await axiosPrivate.get("/getallsavedmovies", {
         params: {
@@ -121,6 +121,62 @@ export const getFavMovies = async (
     return data;
   } catch (error) {
     console.error("Error in getFavMovies:", error);
+    throw error;
+  }
+
+};
+
+// this function return array of recommended movies id based on user's watchList movies. 
+export const getReccMovies = async (
+  userId: string | null,
+  watchList: string[]
+): Promise<string[] | null> => {
+  try {
+    if (!userId) {
+      console.log("userId is null");
+      return null;
+    }
+    if (watchList.length === 0) {
+      console.log("no movies in watchList");
+      return [];
+    }
+
+
+    const reccMoviesIds = await Promise.all(
+      watchList.map(async (movie_id: string) => {
+        const { data } = await axiosRecommender.get("/recommend", {
+          params: { movie_id },
+        });
+
+        // Extract only movie_id values
+        return (data.recommendations || []).map(
+          (rec: { movie_id: string }) => rec.movie_id
+        );
+      })
+    );
+
+    const flattened = reccMoviesIds.flat();
+
+    return flattened;
+  } catch (error) {
+    console.error("Error fetching recommended movies:", error);
+    return null;
+  }
+};
+
+
+export const getReccMoviesDetails = async (
+  recc_movies_ids: string[]
+): Promise<MovieDetails[]> => {
+  try {
+    // Fetch all movie details in parallel
+    const moviesDetails = await Promise.all(
+      recc_movies_ids.map((id) => fetchMovieDetails(id))
+    );
+
+    return moviesDetails;
+  } catch (error) {
+    console.error("Error fetching recommended movies:", error);
     throw error;
   }
 };

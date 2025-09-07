@@ -25,12 +25,11 @@ interface CustomInputProps {
   control: any;
   secureTextEntry?: Boolean;
 }
-interface TrendingMovie {
-  searchTerm: string;
-  movie_id: number;
-  title: string;
-  count: number;
-  poster_url: string;
+interface RecommendedMovie {
+
+  id: number,
+  title: string,
+  poster_path: string | null,
 }
 
 interface MovieDetails {
@@ -81,7 +80,3 @@ interface MovieDetails {
   vote_count: number;
 }
 
-interface TrendingCardProps {
-  movie: TrendingMovie;
-  index: number;
-}
