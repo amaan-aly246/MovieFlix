@@ -1,6 +1,6 @@
 import { icons } from "@/constants/icons";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Image, SafeAreaView, Text, View } from "react-native";
 import { images } from "../../constants/images";
 import useFetch from "../../hooks/useFetch";
 import { fetchMovies } from "../../services/api";
@@ -34,12 +34,13 @@ const search = () => {
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
   return (
+
     <View className="flex-1 bg-primary">
-      <Image
-        source={images.bg}
-        className="flex-1 absolute w-full z-0"
-        resizeMode="cover"
-      />
+      {/* <Image */}
+      {/*   source={images.bg} */}
+      {/*   className="flex-1 absolute w-full z-0" */}
+      {/*   resizeMode="cover" */}
+      {/* /> */}
       <FlatList
         data={movies}
         renderItem={({ item }) => <MovieCard {...item} />}
@@ -56,10 +57,10 @@ const search = () => {
         }}
         ListHeaderComponent={
           <>
-            <View className="w-full flex-row justify-center mt-20 items-center">
-              <Image source={icons.logo} className="w-12 h-10" />
-            </View>
-            <View className="my-5">
+            {/* <View className="w-full flex-row justify-center mt-20 items-center"> */}
+            {/* <Image source={icons.logo} className="w-12 h-10" /> */}
+            {/* </View> */}
+            <View className="my-5 mt-20">
               <SearchBar
                 placeholder="Search for movies..."
                 value={searchQuery}
@@ -101,6 +102,7 @@ const search = () => {
         }
       />
     </View>
+
   );
 };
 

@@ -6,10 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Image, Keyboard, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
-import { images } from "../../constants/images";
 import CustomInput from "../components/CustomInput";
 export type LoginFormInput = z.infer<typeof loginSchema>;
 export default function Login() {
@@ -17,7 +16,6 @@ export default function Login() {
     control,
     handleSubmit,
     setError,
-    reset,
     formState: { isSubmitting, errors },
   } = useForm<LoginFormInput>({
     resolver: zodResolver(loginSchema),
@@ -25,18 +23,19 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(true);
   const { setToken } = useAuth();
   const onSubmit = async ({ email, password }: LoginFormInput) => {
+
     const userDetails = {
       email,
       password,
     };
+    Keyboard.dismiss()
     const id = await login({ userDetails, setError, setToken });
     console.log("id is", id);
+    router.replace("/")
   };
   return (
-    <View className="flex-1 bg-primary">
-      <Image source={images.bg} className="absolute w-full h-full" />
+    <View className="flex-1 bg-primary pt-20">
       <SafeAreaView className="flex-1 px-10 py-16">
-        <Image source={icons.logo} className="w-12 h-10 mt-20 mb-5 mx-auto" />
         <View className="flex items-center ">
           <Text className="text-purple-300 text-4xl font-bold mb-10">
             Login
