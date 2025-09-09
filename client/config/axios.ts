@@ -17,5 +17,4 @@ export default axios.create({
 export const axiosRecommender = axios.create({
   baseURL: RECOMMENDER_URL,
   headers: { "Content-Type": "application/json" },
-  withCredentials: true,
 });

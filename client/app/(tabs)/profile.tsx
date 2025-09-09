@@ -3,12 +3,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import { ProtectedRoutes } from "../components/ProtectedRoutes";
+import { useUserContext } from "@/hooks/useUserContext";
 const Profile = () => {
 
   const router = useRouter();
-  const { setToken } = useAuth();
+  const { setToken, setUserId } = useAuth();
+  const { setWatchList, setReccMoviesDetails } = useUserContext()
   const handleLogOut = () => {
-    logout({ setToken })
+    logout({ setToken, setWatchList, setUserId, setReccMoviesDetails })
     router.push("/")
   }
   return (

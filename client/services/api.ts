@@ -141,7 +141,6 @@ export const getReccMovies = async (
       return [];
     }
 
-
     const reccMoviesIds = await Promise.all(
       watchList.map(async (movie_id: string) => {
         const { data } = await axiosRecommender.get("/recommend", {

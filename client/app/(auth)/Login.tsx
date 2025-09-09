@@ -21,7 +21,7 @@ export default function Login() {
     resolver: zodResolver(loginSchema),
   });
   const [showPassword, setShowPassword] = useState(true);
-  const { setToken } = useAuth();
+  const { setToken, setUserId } = useAuth();
   const onSubmit = async ({ email, password }: LoginFormInput) => {
 
     const userDetails = {
@@ -31,6 +31,7 @@ export default function Login() {
     Keyboard.dismiss()
     const id = await login({ userDetails, setError, setToken });
     console.log("id is", id);
+    setUserId(id as string)
     router.replace("/")
   };
   return (

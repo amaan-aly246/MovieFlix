@@ -5,6 +5,7 @@ interface AuthContextType {
   setToken: (valude: string | null) => void;
   userId: string | null;
   isValidating: boolean;
+  setUserId: (value: string | null) => void;
 }
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined
@@ -26,7 +27,7 @@ export default function AuthContextProvider({
     checkAuth(setToken, setUserId, setIsValidating);
   };
   return (
-    <AuthContext.Provider value={{ token, setToken, userId, isValidating }}>
+    <AuthContext.Provider value={{ token, setToken, userId, isValidating, setUserId }}>
       {children}
     </AuthContext.Provider>
   );

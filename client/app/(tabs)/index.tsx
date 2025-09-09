@@ -17,9 +17,8 @@ import { useUserContext } from "@/hooks/useUserContext";
 import { useAuth } from "@/hooks/useAuth";
 import RecommendedMovieCard from "../components/RecommendedMovieCard";
 export default function Index() {
-  const { watchList, setWatchList } = useUserContext()
+  const { watchList, setWatchList, setReccMoviesDetails, reccMoviesDetails } = useUserContext()
   const { userId } = useAuth()
-  const [reccMoviesDetails, setReccMoviesDetails] = useState<MovieDetails[]>([]);
   const {
     data: movies,
     loading,
@@ -38,15 +37,9 @@ export default function Index() {
     init();
   }, [userId]);
 
-  if (userId) {
-
-    // re-fetch fav movies when user navigate to home page
-    getFavMovies(userId, setWatchList)
-  }
 
   useEffect(() => {
     if (watchList.length === 0) return;
-
     const fetchRecommended = async () => {
       const reccMoviesIds = await getReccMovies(userId, watchList);
       if (reccMoviesIds && reccMoviesIds.length > 0) {
